@@ -7,6 +7,9 @@ module.exports = () =>
         // Initialize express
         const app = express()
 
+        // Add important middlewares
+        app.use(express.json())
+
         // Create a database connection
         mysql
             .createConnection({
