@@ -1,6 +1,6 @@
 const express = require('express')
 const mysql = require('promise-mysql')
-const { dbPassword } = require('./config')
+const { dbPassword, dbUser, dbPort } = require('./config')
 
 module.exports = () =>
     new Promise((resolve, reject) => {
@@ -14,9 +14,10 @@ module.exports = () =>
         mysql
             .createConnection({
                 host: 'localhost',
-                user: 'root',
+                user: dbUser,
                 password: dbPassword,
                 database: 'rest_api',
+                port: dbPort || 3306,
             })
             .then(connection => {
                 console.log('DB connection established!')
