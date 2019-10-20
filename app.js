@@ -1,24 +1,15 @@
 const boot = require('./boot')
 const { checkIfBodyExists } = require('./middlewares')
+const todoRoutes = require('./routes/todo')
 
 boot().then(app => {
+    app.use('/todo', todoRoutes)
+
     // Get all todos
     app.get('/todos', async (req, res) => {
         const { db } = global
         const result = await db.query('SELECT * FROM todos')
         res.json(result)
-    })
-
-    // Get todo by id
-    app.get('/todo/:id', async (req, res) => {
-        const { db } = global
-        const { id } = req.params
-        const result = await db.query('SELECT * FROM todos WHERE id = ?', [id])
-        if (result.length) {
-            res.json(result)
-        } else {
-            res.status(404).send('Not found')
-        }
     })
 
     // Add a todo
@@ -30,4 +21,20 @@ boot().then(app => {
     })
 
     //TODO Add route to update and delete todos
+
+    app.put('/todo/:id', (req, res) => {
+        const { db } = global
+        const { id } = req.params
+        const { title } = req.body
+        if (!title) {
+            res.status(400).send('No title')
+        }
+        db.query('UPDATE todos SET title = ? WHERE id = ?', [title, id])
+            .then(result => {
+                res.json(result)
+            })
+            .catch(() => {
+                res.status(400).send('Failed to update')
+            })
+    })
 })
